@@ -8,13 +8,12 @@ export default function HeroSection() {
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="lg:w-1/2 text-center lg:text-left">
-            <div className="inline-flex items-center gap-3 mb-6 bg-white dark:bg-slate-800 rounded-full shadow-md border border-slate-200 dark:border-slate-700">
+            <div className="inline-flex items-center gap-3 mb-6 p-3 bg-white dark:bg-slate-800 rounded-full shadow-md border border-slate-200 dark:border-slate-700">
               <Zap className="h-5 w-5 text-yellow-500" />
               <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Blockchain-Powered Monitoring
               </span>
             </div>
-
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight">
               Never Miss Downtime with
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -26,22 +25,20 @@ export default function HeroSection() {
               Monitor your website's uptime across 50+ global locations with blockchain-verified status reports.
               Get instant alerts and detailed analytics.
             </p>
-
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-              <Button size="lg" className="h-14 text-lg px-8 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 shadow-lg">
+              <Button size="lg" className="h-14 text-lg px-8 ">
                 Start Free Trial
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="h-14 text-lg px-8 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 See Live Demo
               </Button>
             </div>
           </div>
-
           <div className="lg:w-1/2 relative flex justify-center">
             <div className="relative w-full max-w-lg rounded-[2rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-800">
               <img
