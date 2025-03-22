@@ -42,7 +42,7 @@ export default function HeroSection() {
           <div className="lg:w-1/2 relative flex justify-center">
             <div className="relative w-full max-w-lg rounded-[2rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-800">
               <img
-                src="../../../public/dashboard.jpg"
+                src="/dashboard.jpg"
                 alt="Dashboard Preview"
                 className="w-full h-auto"
               />

@@ -1,5 +1,3 @@
-import Header from '../components/layouts/Header';
-import Footer from '../components/layouts/Footer';
 import HeroSection from '../components/sections/HeroSection';
 import FeaturesSection from '../components/sections/FeaturesSection';
 import HowItWorks from '..//components/sections/HowItWorks';
