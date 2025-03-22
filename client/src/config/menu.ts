@@ -8,7 +8,7 @@ interface NavItem {
     external?: boolean;
     icon?: keyof typeof Icons;
     label?: string;
-    protected?: boolean; // <-- Added for authentication check
+    protected?: boolean; 
 }
 
 interface NavItemWithChildren extends NavItem {
