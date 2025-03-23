@@ -19,7 +19,35 @@ export const addWebsiteController = async (req: Request, res: Response): Promise
         });
 
         return res.status(201).json(website);
-    } catch (error:any) {
+    } catch (error: any) {
+        return res.status(500).json({ error: "Internal Server Error", details: error.message });
+    }
+};
+
+
+
+export const getWebsiteController = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { email } = req.query;
+
+        if (!email || typeof email !== "string") {
+            return res.status(400).json({ error: "Invalid or missing email parameter" });
+        }
+
+        const websites = await prisma.website.findMany({
+            where: { user: { email } },
+            include: { 
+                websiteTicks: { 
+                    orderBy: { timestamp: "desc" }, 
+                    take: 1 
+                } 
+            }
+        });
+
+        return res.status(200).json(websites);
+    } 
+    catch (error: any) {
+        console.error("Error fetching websites:", error);
         return res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 };

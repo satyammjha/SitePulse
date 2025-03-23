@@ -17,21 +17,25 @@ model User {
 }
 
 model Website {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  url     String   @unique
-  userId  String   @db.ObjectId
-  addedOn DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  url       String   @unique
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
 
   user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   websiteTicks WebsiteTicks[]
+
+  @@index([userId]) // Index for faster owner lookups
 }
 
 model WebsiteTicks {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   websiteId String   @db.ObjectId
-  timeStamp DateTime @default(now())
+  timestamp DateTime @default(now())
   status    String
-  latency   Int
+  latency   Int? // Optional for failed checks
 
   website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([websiteId]) // Index for faster status retrieval
 }
