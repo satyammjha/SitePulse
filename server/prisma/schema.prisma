@@ -20,12 +20,12 @@ model Website {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   url       String   @unique
   userId    String   @db.ObjectId
-  createdAt DateTime @default(now())
+  lastCheck DateTime @default(now())
 
   user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   websiteTicks WebsiteTicks[]
 
-  @@index([userId]) // Index for faster owner lookups
+  @@index([userId])
 }
 
 model WebsiteTicks {
@@ -33,9 +33,9 @@ model WebsiteTicks {
   websiteId String   @db.ObjectId
   timestamp DateTime @default(now())
   status    String
-  latency   Int? // Optional for failed checks
+  latency   Int?
 
   website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
-  @@index([websiteId]) // Index for faster status retrieval
+  @@index([websiteId]) 
 }

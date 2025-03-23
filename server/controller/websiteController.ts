@@ -5,16 +5,22 @@ const prisma = new PrismaClient();
 
 export const addWebsiteController = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const { url, userId } = req.body;
+        const { url, email } = req.body;
 
-        if (!url || !userId) {
-            return res.status(400).json({ error: "URL and User ID are required." });
+        if (!url || !email) {
+            return res.status(400).json({ error: "URL and email are required." });
+        }
+
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
         }
 
         const website = await prisma.website.create({
             data: {
                 url,
-                userId,
+                userId: user.id, 
             },
         });
 
@@ -25,10 +31,9 @@ export const addWebsiteController = async (req: Request, res: Response): Promise
 };
 
 
-
 export const getWebsiteController = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const { email } = req.query;
+        const email = req.query.email as string;
 
         if (!email || typeof email !== "string") {
             return res.status(400).json({ error: "Invalid or missing email parameter" });
