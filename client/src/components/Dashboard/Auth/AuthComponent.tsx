@@ -8,9 +8,8 @@ const AuthComponent = () => {
         <div className="flex gap-4">
             {!isAuthenticated ? (
                 <>
-                    <Button onClick={() => loginWithPopup()}>Sign In</Button>
                     <Button onClick={() => loginWithRedirect({ appState: { screen_hint: "signup" } })}>
-                        Sign Up
+                        Get Started
                     </Button>
                 </>
             ) : (

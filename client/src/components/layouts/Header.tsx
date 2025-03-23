@@ -5,11 +5,11 @@ import ThemeToggle from "./ThemeToggle";
 import { useEffect, useState } from "react";
 import { mainMenu } from "../../config/menu";
 import AuthComponent from "../Dashboard/Auth/AuthComponent";
+import { useAuth0 } from "@auth0/auth0-react";
 
-// import { useAuth } from "@/context/AuthContext"; // Import auth context
 
 export default function Header() {
-  var [isAuthenticated, setIsAuthenticated] = useState(true)
+  const { isAuthenticated } = useAuth0();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
