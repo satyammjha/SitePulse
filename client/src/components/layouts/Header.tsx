@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import ThemeToggle from "./ThemeToggle";
 import { useEffect, useState } from "react";
 import { mainMenu } from "../../config/menu";
+import AuthComponent from "../Dashboard/Auth/AuthComponent";
+
 // import { useAuth } from "@/context/AuthContext"; // Import auth context
 
 export default function Header() {
@@ -75,24 +77,7 @@ export default function Header() {
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-4" />
             <div className="flex items-center gap-4">
               <ThemeToggle />
-              {!isAuthenticated ? (
-                <>
-                  <Button variant="ghost" asChild onClick={() => {
-                    setIsAuthenticated(true);
-                  } } >
-                    <Link to="/">Sign In</Link>
-                  </Button>
-                  <Button asChild className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600">
-                    <Link to="/signup">Get Started</Link>
-                  </Button>
-                </>
-              ) : (
-                <Button onClick={() => {
-                  setIsAuthenticated(false);
-                }}>
-                  Logout
-                </Button>
-              )}
+              <AuthComponent />
             </div>
           </div>
 

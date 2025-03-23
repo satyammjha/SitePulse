@@ -5,8 +5,10 @@ import { router } from "./Router";
 
 export default function App() {
     return (
-        <ThemeProvider>
-            <RouterProvider router={router} />
-        </ThemeProvider>
+        <>
+            <ThemeProvider>
+                <RouterProvider router={router} />
+            </ThemeProvider>
+        </>
     )
 }
