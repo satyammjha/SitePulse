@@ -44,7 +44,7 @@ export const getWebsiteController = async (req: Request, res: Response): Promise
             where: { user: { email } },
             include: {
                 websiteTicks: {
-                    orderBy: { timestamp: "desc" },
+                    orderBy: { checkedAt: "desc" },
                     take: 1
                 }
             }

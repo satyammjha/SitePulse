@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Plus } from "lucide-react";
-import{ addWebsite} from "@/service/webService";
+import { addWebsite } from "@/service/webService";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export const AddWebsiteDialog = () => {
@@ -94,7 +94,7 @@ export const AddWebsiteDialog = () => {
                   <SelectValue placeholder="Select interval" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="180000">Every 3 minutes</SelectItem>
+                  <SelectItem value="10000">Every 10 sec</SelectItem>
                   <SelectItem value="300000">Every 5 minutes</SelectItem>
                   <SelectItem value="600000">Every 10 minutes</SelectItem>
                   <SelectItem value="900000">Every 15 minutes</SelectItem>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Navigate } from "react-router-dom";
 import { sampleAlerts } from "@/data/sampleData";
@@ -8,10 +8,19 @@ import { AddWebsiteDialog } from "@/components/Dashboard/AddWebsite";
 import { PerformanceCharts } from "@/components/Dashboard/PerformanceChart";
 import { Button } from "@/components/ui/button";
 import { getWebsites } from "@/service/webService";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000");
+
+const tempWebsites = [
+  { _id: "1", url: "https://example.com", status: "Up", latency: 120 },
+  { _id: "2", url: "https://testsite.com", status: "Down", latency: -1 },
+  { _id: "3", url: "https://sample.io", status: "Up", latency: 200 },
+];
 
 const UptimeChainDashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [websites, setWebsites] = useState([]);
+  const [websites, setWebsites] = useState<{ _id: string; url: string; status: string; latency: number }[]>([]);
   const [darkMode, setDarkMode] = useState(false);
   const [error, setError] = useState(null);
   const [loadingData, setLoadingData] = useState(true);
@@ -22,16 +31,26 @@ const UptimeChainDashboard = () => {
         if (isAuthenticated && user?.email) {
           setLoadingData(true);
           const response = await getWebsites(user.email);
-          setWebsites(response || []);
+          setWebsites(response?.length > 0 ? response : tempWebsites);
         }
       } catch (err) {
         console.error("Error fetching websites:", err);
+        setWebsites(tempWebsites);
       } finally {
         setLoadingData(false);
       }
     };
     fetchWebsites();
-  }, [isAuthenticated, user?.email, getWebsites]);
+  }, [isAuthenticated, user?.email]);
+  useEffect(() => {
+    socket.on("tick_update", (data) => {
+      console.log("🔄 Real-time update received:", data);
+    });
+
+    return () => {
+      socket.off("tick_update");
+    };
+  }, []);
 
   if (isLoading) return <div className="text-center mt-10">Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/" replace />;
@@ -60,25 +79,23 @@ const UptimeChainDashboard = () => {
             </div>
           </div>
 
-          {/* Website Cards Section */}
           <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-6">
             {loadingData ? (
-              // Skeleton Loader
+
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="p-4 border rounded-lg bg-gray-200 animate-pulse"></div>
               ))
             ) : error ? (
-              // Error Message
+
               <div className="col-span-full text-red-500 text-center">{error}</div>
             ) : (
-              // Render Websites
+
               websites.map((website) => (
                 <WebsiteCard key={website._id} website={website} />
               ))
             )}
           </div>
 
-          {/* Performance & Alerts Section */}
           <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <PerformanceCharts />

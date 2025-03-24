@@ -17,26 +17,25 @@ model User {
 }
 
 model Website {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  url       String   @unique
-  userId    String   @db.ObjectId
-  lastCheck DateTime @default(now())
-  interval Int
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  url       String
+  userId    String
+  lastCheck DateTime?
+  interval  Int
 
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   websiteTicks WebsiteTicks[]
 
-  @@index([userId])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([url, userId])
 }
 
 model WebsiteTicks {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  websiteId String   @db.ObjectId
-  timestamp DateTime @default(now())
+  websiteId String
   status    String
-  latency   Int?
+  latency   Int
+  checkedAt DateTime @default(now())
 
   website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
-
-  @@index([websiteId]) 
 }
