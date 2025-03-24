@@ -4,7 +4,7 @@ import cors from 'cors';
 import userRouter from './routes/userRoute';
 // import uptimeRoute from './routes/upTimeCheckerRoute';
 import websiteRoute from './routes/websiteRoute';
-import { checkAllWebsites } from './service/uptimeChecker';
+// import { checkAllWebsites } from './service/uptimeChecker';
 
 dotenv.config();
 const PORT = process.env.PORT
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 app.use('/user', userRouter);
 // app.use('/', uptimeRoute);
 app.use('/website', websiteRoute)
-setInterval(checkAllWebsites, 20000);
+// setInterval(checkAllWebsites, 20000);
 
 app.listen(PORT, () => {
     console.log(`server is running on port ${PORT}`)
