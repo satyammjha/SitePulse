@@ -21,6 +21,7 @@ model Website {
   url       String   @unique
   userId    String   @db.ObjectId
   lastCheck DateTime @default(now())
+  interval Int
 
   user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   websiteTicks WebsiteTicks[]

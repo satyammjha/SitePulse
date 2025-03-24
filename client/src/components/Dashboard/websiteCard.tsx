@@ -1,8 +1,7 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Edit, Trash2, Pause, RefreshCw, ExternalLink, Settings } from 'lucide-react';
-import { Website } from '@/config/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -11,10 +10,12 @@ interface WebsiteCardProps {
 }
 
 export const WebsiteCard = ({ website }: WebsiteCardProps) => {
-  const siteTicks = Array(10).fill('up').map((_, i) => ({
-    status: i % 8 === 0 ? 'down' : 'up', 
-    timestamp: Date.now() - (i * 15 * 60 * 1000) 
-  }));
+  const siteTicks = Array(10)
+    .fill('up')
+    .map((_, i) => ({
+      status: i % 8 === 0 ? 'down' : 'up',
+      timestamp: Date.now() - i * 15 * 60 * 1000,
+    }));
 
   return (
     <Card className="w-full hover:shadow-md transition-shadow group">
@@ -27,9 +28,7 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
               </div>
             </div>
             <div className="space-y-1">
-              <CardTitle className="text-lg font-semibold tracking-tight">
-                {website.name}
-              </CardTitle>
+              <CardTitle className="text-lg font-semibold tracking-tight">{website.name}</CardTitle>
               <div className="flex items-center gap-2">
                 <a
                   href={website.url}
@@ -39,9 +38,6 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
                 >
                   {website.url.replace(/^https?:\/\//, '')}
                 </a>
-                {/* <span className="text-xs text-muted-foreground">
-                  · Checked {formatDistanceToNow(website.lastChecked, { addSuffix: true })}
-                </span> */}
               </div>
             </div>
           </div>
@@ -57,9 +53,13 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
               </DropdownMenuItem>
               <DropdownMenuItem className="flex items-center gap-2">
                 {website.isPaused ? (
-                  <><RefreshCw className="h-4 w-4" /> Resume</>
+                  <>
+                    <RefreshCw className="h-4 w-4" /> Resume
+                  </>
                 ) : (
-                  <><Pause className="h-4 w-4" /> Pause</>
+                  <>
+                    <Pause className="h-4 w-4" /> Pause
+                  </>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem className="flex items-center gap-2 text-red-500">
@@ -77,10 +77,7 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
               <span>{website.uptime}%</span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-500 transition-all duration-500"
-                style={{ width: `${website.uptime}%` }}
-              />
+              <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${website.uptime}%` }} />
             </div>
           </div>
           <div className="space-y-1">
@@ -96,9 +93,7 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Last Incident</p>
             <p className="text-sm font-medium">
-              {website.lastDowntime ?
-                formatDistanceToNow(website.lastDowntime, { addSuffix: true }) :
-                'No incidents'}
+              {website.lastDowntime ? formatDistanceToNow(website.lastDowntime, { addSuffix: true }) : 'No incidents'}
             </p>
           </div>
           <div className="space-y-1">
@@ -109,24 +104,21 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
 
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">Recent Checks</p>
-          <div className="flex flex-wrap gap-1">
-            {siteTicks.map((tick, index) => (
-
-              <TooltipProvider>
+          <TooltipProvider>
+            <div className="flex flex-wrap gap-1">
+              {siteTicks.map((tick, index) => (
                 <Tooltip key={index}>
                   <TooltipTrigger>
                     <div className={`h-3 w-3 rounded-sm ${tick.status === 'up' ? 'bg-green-500' : 'bg-red-500'}`} />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>{tick.status === 'up' ? 'Operational' : 'Downtime'}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {formatDistanceToNow(tick.timestamp, { addSuffix: true })}
-                    </p>
+                    <p className="text-muted-foreground text-xs">{formatDistanceToNow(tick.timestamp, { addSuffix: true })}</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-            ))}
-          </div>
+              ))}
+            </div>
+          </TooltipProvider>
         </div>
       </CardContent>
       <CardFooter className="pt-0">
