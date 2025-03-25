@@ -35,13 +35,23 @@ export const addWebsiteController = async (req: Request, res: Response): Promise
 export const getWebsiteController = async (req: Request, res: Response): Promise<Response> => {
     try {
         const email = req.query.email as string;
-        console.log("giving ites owned by:", email);
+        console.log("Fetching sites for user:", email);
+
         if (!email || typeof email !== "string") {
             return res.status(400).json({ error: "Invalid or missing email parameter" });
         }
 
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true },
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
         const websites = await prisma.website.findMany({
-            where: { user: { email } },
+            where: { userId: user.id },
             include: {
                 websiteTicks: {
                     orderBy: { checkedAt: "desc" },

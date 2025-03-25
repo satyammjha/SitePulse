@@ -13,7 +13,7 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now())
 
-  websites Website[]
+  websites Website[] @relation("UserWebsites")
 }
 
 model Website {
@@ -25,7 +25,7 @@ model Website {
 
   websiteTicks WebsiteTicks[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation("UserWebsites", fields: [userId], references: [id])
 
   @@unique([url, userId])
 }
