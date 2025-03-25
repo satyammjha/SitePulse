@@ -3,8 +3,7 @@ import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
-  CardTitle,
+  CardHeader
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,7 +28,8 @@ import {
   Gauge,
   History,
   HeartPulse,
-  TrashIcon,
+  Trash2,
+  Trash2Icon
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from "@/components/ui/progress";
@@ -127,30 +127,27 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
     }
   }
 
-
   return (
-    <Card className="w-full hover:shadow-lg transition-shadow group relative bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
+    <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow bg-background">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="relative">
               <div className={`absolute -left-1 -top-1 h-3 w-3 rounded-full ${statusColor} animate-pulse`} />
               <Activity className="h-6 w-6 text-muted-foreground" />
             </div>
-            <div>
-              <Badge variant={siteStatus === 'Up' ? 'default' : 'destructive'}>
+            <div className="space-y-1">
+              <Badge>
                 <a
                   href={website.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-white dark:text-black hover:text-primary hover:underline flex items-center gap-1"
+                  className="text-sm text-white dark:text-black text-muted-foreground hover:text-primary hover:underline flex items-center gap-1.5"
                 >
                   <ExternalLink className="h-4 w-4" />
                   {website.url.replace(/^https?:\/\//, '')}
                 </a>
               </Badge>
-
-
             </div>
           </div>
 
@@ -159,16 +156,19 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                className="opacity-1 group-hover:opacity-100 transition-opacity"
                 aria-label="Website settings"
               >
                 <Settings className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem className="gap-2" onClick={() => deleteWebsiteHandler(website.id)}>
-                <TrashIcon className="h-4 w-4" />
-                Delete
+              <DropdownMenuItem
+                className="gap-2 text-red-600"
+                onClick={() => deleteWebsiteHandler(website.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Monitor
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2">
                 <History className="h-4 w-4" />
@@ -184,108 +184,37 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Health Status Grid */}
+        {/* Key Metrics Grid */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1 p-4 rounded-lg bg-muted/10">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="p-4 rounded-lg border bg-muted/5">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <div className={`h-2 w-2 rounded-full ${statusColor}`} />
               Current Status
             </div>
-            <div className={`text-3xl font-bold ${siteStatus === 'Up' ? 'text-green-600' : 'text-red-600'}`}>
-              {isLoading ? <Skeleton className="h-8 w-20" /> : siteStatus}
+            <div className={`text-2xl font-semibold ${siteStatus === 'Up' ? 'text-green-600' : 'text-red-600'}`}>
+              {siteStatus}
             </div>
           </div>
 
-          <div className="space-y-1 p-4 rounded-lg bg-muted/10">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="p-4 rounded-lg border bg-muted/5">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Gauge className="h-4 w-4" />
               Average Latency
             </div>
             <div className="flex items-baseline gap-2">
-              {isLoading ? (
-                <Skeleton className="h-8 w-24" />
-              ) : (
-                <>
-                  <span className="text-3xl font-bold">
-                    {averageLatency.toFixed(2)}
-                  </span>
-                  <span className="text-muted-foreground">ms</span>
-                  <div className={`w-3 h-3 rounded-full ${latencyStatus}`} />
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="space-y-3">
-          <h3 className="font-semibold flex items-center gap-2">
-            <History className="h-5 w-5 text-primary" />
-            Recent Checks
-          </h3>
-          <div className="flex gap-1.5 overflow-x-auto pb-2">
-            {isLoading ? (
-              Array(24).fill(0).map((_, i) => (
-                <Skeleton key={i} className="h-4 w-4 rounded-full" />
-              ))
-            ) : ticks.length === 0 ? (
-              <div className="text-sm text-muted-foreground">
-                No checks recorded
-              </div>
-            ) : (
-              ticks.map((tick, index) => (
-                <TooltipProvider>
-                  <Tooltip key={index}>
-                    <TooltipTrigger>
-                      <div
-                        className={`h-4 w-4 rounded-full ${tick.status === 'Up'
-                          ? 'bg-green-400/90'
-                          : 'bg-red-400/90'
-                          }`}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="grid gap-1 text-sm">
-                        <div className="font-medium">{tick.status}</div>
-                        <div className="text-muted-foreground">
-                          {tick.time.toLocaleTimeString()}
-                        </div>
-                        <div>Latency: {tick.latency}ms</div>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))
-            )}
-          </div>
-        </div>
-        {/* Supplemental Metrics */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* <div className="space-y-2 p-4 rounded-lg bg-muted/10">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              Uptime (24h)
-            </div>
-            <div className="flex items-center gap-3">
-              <Progress value={website.uptime} className="h-2 flex-1" />
-              <span className="font-semibold text-primary">{website.uptime}%</span>
-            </div>
-          </div> */}
-
-          <div className="space-y-2 p-4 rounded-lg bg-muted/10">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <AlertCircle className="h-4 w-4" />
-              Last Incident
-            </div>
-            <div className="font-medium">
-              {website.lastDowntime || 'No incidents'}
+              <span className="text-2xl font-semibold">
+                {averageLatency.toFixed(2)}
+              </span>
+              <span className="text-muted-foreground">ms</span>
+              <div className={`w-3 h-3 rounded-full ${latencyStatus}`} />
             </div>
           </div>
         </div>
 
-        {/* Performance Visualization */}
+        {/* Performance Chart */}
         <div className="space-y-4">
-          {/* <div className="flex items-center justify-between">
-            <h3 className="font-semibold flex items-center gap-2">
-              <HeartPulse className="h-5 w-5 text-primary" />
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Performance History
             </h3>
             <select
@@ -297,28 +226,59 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
               <option value="24h">24 hours</option>
               <option value="7d">7 days</option>
             </select>
-          </div> */}
-          <div className="h-64 w-full">
-            {isLoading ? (
-              <Skeleton className="h-full w-full rounded-md" />
-            ) : (
-              <PerformanceCharts
-                data={chartData}
-                selectedPeriod={selectedPeriod}
-                onPeriodChange={setSelectedPeriod}
-              />
-            )}
+          </div>
+          <div className="h-64 w-full border rounded-lg overflow-hidden">
+            <PerformanceCharts
+              data={chartData}
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={setSelectedPeriod}
+            />
           </div>
         </div>
 
-        {/* Activity Timeline */}
+        {/* Activity Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Recent Checks
+            </h3>
+            <span className="text-sm text-muted-foreground">
+              {ticks.length} records
+            </span>
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto pb-2">
+            {ticks.map((tick, index) => (
+              <TooltipProvider>
+                <Tooltip key={index}>
+                  <TooltipTrigger>
+                    <div
+                      className={`h-3 w-3 rounded-full ${tick.status === 'Up'
+                        ? 'bg-green-400/90'
+                        : 'bg-red-400/90'
+                        }`}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="grid gap-1 text-sm">
+                      <div className="font-medium">{tick.status}</div>
+                      <div className="text-muted-foreground">
+                        {tick.time.toLocaleTimeString()}
+                      </div>
+                      <div>Latency: {tick.latency}ms</div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
+          </div>
+        </div>
       </CardContent>
 
       <CardFooter className="text-xs text-muted-foreground flex items-center gap-2 border-t pt-4">
-        <Timer className="h-4 w-4" />
+        <AlertCircle className="h-4 w-4" />
         <span>
-          Automatic health checks every {website.monitoringInterval} minutes
-          {ticks.length > 0 && ` • Last check ${ticks[0].time.toLocaleTimeString()}`}
+          Last incident: {website.lastDowntime || 'No incidents recorded'} •
+          Last check: {ticks[0]?.time.toLocaleTimeString() || 'N/A'}
         </span>
       </CardFooter>
     </Card>

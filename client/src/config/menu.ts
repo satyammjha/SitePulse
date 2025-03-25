@@ -8,7 +8,7 @@ interface NavItem {
     external?: boolean;
     icon?: keyof typeof Icons;
     label?: string;
-    protected?: boolean; 
+    protected?: boolean;
 }
 
 interface NavItemWithChildren extends NavItem {
@@ -19,7 +19,7 @@ export const mainMenu: NavItemWithChildren[] = [
     {
         title: "Dashboard",
         to: "/dashboard",
-        protected: true, // Require authentication
+        protected: true,
     },
     {
         title: "Monitors",
@@ -46,12 +46,7 @@ export const mainMenu: NavItemWithChildren[] = [
         title: "Reports",
         to: "/reports",
         protected: true,
-    },
-    {
-        title: "Notifications",
-        to: "/notifications",
-        protected: true,
-    },
+    }
 ];
 
 export const sideMenu: NavItemWithChildren[] = [
