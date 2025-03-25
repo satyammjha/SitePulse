@@ -67,3 +67,45 @@ export const getWebsiteController = async (req: Request, res: Response): Promise
         return res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 };
+
+
+export const deleteWebsiteController = async (req: Request, res: Response) => {
+    try {
+        const { id, email } = req.body;
+
+
+        const user = await prisma.user.findUnique({
+            where: { email: email },
+        });
+
+        if (!email) {
+            return res.status(400).json({ error: "User email is required" });
+        }
+
+        const website = await prisma.website.findUnique({
+            where: { id: id },
+        });
+
+        if (!website) {
+            return res.status(404).json({ error: "Website not found" });
+        }
+
+
+        if (!user || user.email !== email) {
+            return res.status(403).json({ error: "Unauthorized: You do not own this website" });
+        }
+
+        await prisma.websiteTicks.deleteMany({
+            where: { id },
+        });
+
+        await prisma.website.delete({
+            where: { id: id },
+        });
+
+        res.json({ message: "Website and associated ticks deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting website:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};

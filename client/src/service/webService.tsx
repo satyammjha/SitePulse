@@ -21,4 +21,19 @@ const getWebsites = async (email: string) => {
     }
 }
 
-export {addWebsite, getWebsites};
+
+export const deleteWebsite = async (email: string, id: string) => {
+    try {
+        const response = await axios.post('http://localhost:5000/website/delete', {
+            email: email,
+            id: id
+
+        })
+        return response.data;
+    }
+    catch (error: any) {
+        return error;
+    }
+}
+
+export { addWebsite, getWebsites };
