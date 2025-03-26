@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import { sendUpdate, initSocketServer } from "../socket/socket";
-
+import { notifyUser } from "./notifyUser";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +13,7 @@ const getWebsitesToCheck = async () => {
 
     const websites = await prisma.website.findMany();
     console.log("all websites", websites);
+
     return websites.filter((website) =>
         !website.lastCheck || new Date(website.lastCheck.getTime() + website.interval) < now
     );
@@ -32,9 +33,8 @@ const checkWebsiteUptime = async (url: string) => {
         return { status: "Down", latency: -1 };
     }
 };
-
 /**
-
+ * Update website status in the database
  * @param {string} websiteId 
  * @param {string} status 
  * @param {number | null} latency 
@@ -61,6 +61,7 @@ const updateWebsiteStatus = async (websiteId: string, status: string, latency: n
         });
 
         console.log(`✅ Last check updated for ${websiteId}`);
+
         sendUpdate({
             websiteId,
             status,
@@ -68,11 +69,33 @@ const updateWebsiteStatus = async (websiteId: string, status: string, latency: n
             checkedAt: new Date()
         });
 
+        if (status === "Down") {
+            const website = await prisma.website.findUnique({
+                where: { id: websiteId },
+                select: { userId: true, url: true },
+
+            });
+
+            if (website && website.userId) {
+                const user = await prisma.user.findUnique({
+                    where: { id: website.userId },
+                    select: { email: true }
+                });
+
+                if (user && user.email) {
+                    notifyUser(user.email, website.url);
+                    console.log(`📧 Notification sent to ${user.email} for ${website.url}`);
+                }
+            }
+        }
     } catch (error) {
         console.error(`❌ Error updating status for ${websiteId}:`, error);
     }
 };
 
+/**
+ * Check all websites periodically
+ */
 export const checkAllWebsites = async () => {
     console.log("Starting website checks...");
 
@@ -93,4 +116,5 @@ export const checkAllWebsites = async () => {
     console.log("Website checks completed.");
 };
 
+// Run website checks every 5 seconds
 setInterval(checkAllWebsites, 5000);

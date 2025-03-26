@@ -9,7 +9,6 @@ export const addUserController = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "Name and Email are required." });
         }
 
-        // Check if the user already exists
         const existingUser = await prisma.user.findUnique({
             where: { email },
         });
