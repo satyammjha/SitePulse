@@ -37,6 +37,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PerformanceCharts } from './PerformanceChart';
 import { io } from "socket.io-client";
 import { deleteWebsite } from '@/service/webService';
+import { getWebsiteTicks } from '@/service/getTicks';
 import { useAuth0 } from '@auth0/auth0-react';
 
 interface Website {
@@ -59,20 +60,19 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
   const [siteStatus, setSiteStatus] = useState(website.status);
   const [siteLatency, setSiteLatency] = useState(website.responseTime);
   const [ticks, setTicks] = useState<{ time: Date; status: string; latency: number }[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState('24h');
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedPeriod, setSelectedPeriod] = useState<'1h' | '24h' | '7d'>('1h');
+  const [historicalData, setHistoricalData] = useState<{ time: Date; latency: number }[]>([]);
+  const [averageLatency, setAverageLatency] = useState(0);
   const { user } = useAuth0();
 
   useEffect(() => {
     const socket = io("http://localhost:5000");
-
     const handleStatusUpdate = (websiteUpdate: {
       websiteId: string;
       status: string;
       latency: number;
       checkedAt: string;
     }) => {
-      setIsLoading(false);
       if (websiteUpdate.websiteId === website.id) {
         setSiteStatus(websiteUpdate.status);
         setSiteLatency(websiteUpdate.latency);
@@ -86,7 +86,6 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
         ]);
       }
     };
-
     socket.on("tick_update", handleStatusUpdate);
     return () => {
       socket.off("tick_update", handleStatusUpdate);
@@ -94,41 +93,62 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
     };
   }, [website.id]);
 
-  const statusColor = siteStatus === 'Up' ? 'bg-green-400/90' : 'bg-red-400';
-  const latencyStatus = siteLatency < 300 ? 'bg-green-400' :
-    siteLatency < 600 ? 'bg-amber-400' : 'bg-red-400';
-  const chartData = ticks.map(tick => ({
-    time: tick.time,
-    responseTime: tick.latency,
-  }));
-  const [averageLatency, setAverageLatency] = useState(0);
+  useEffect(() => {
+    if (selectedPeriod === '24h' || selectedPeriod === '7d') {
+      const fetchHistorical = async () => {
+        try {
+          const response = await getWebsiteTicks(website.id);
+          const data = response.data.map((tick: any) => ({
+            time: new Date(tick.checkedAt),
+            latency: tick.latency
+          }));
+          const cutoff = selectedPeriod === '24h'
+            ? Date.now() - 86400000
+            : Date.now() - 604800000;
+          setHistoricalData(data.filter((t: { time: { getTime: () => number; }; }) => t.time.getTime() > cutoff));
+        } catch (error) {
+          console.error('Error fetching historical data:', error);
+        }
+      };
+      fetchHistorical();
+    }
+  }, [selectedPeriod, website.id]);
 
   useEffect(() => {
-    if (ticks.length > 0) {
-      const total = ticks.reduce((sum, tick) => sum + tick.latency, 0);
-      setAverageLatency(total / ticks.length);
+    const calculateAverage = (data: { latency: number }[]) => {
+      if (!data.length) return 0;
+      return data.reduce((sum, tick) => sum + tick.latency, 0) / data.length;
+    };
+
+    if (selectedPeriod === '1h') {
+      const oneHourAgo = Date.now() - 3600000;
+      const recentTicks = ticks.filter(t => t.time.getTime() > oneHourAgo);
+      setAverageLatency(calculateAverage(recentTicks));
     } else {
-      setAverageLatency(0);
+      setAverageLatency(calculateAverage(historicalData));
     }
-  }, [ticks]);
+  }, [ticks, historicalData, selectedPeriod]);
+
+  const statusColor = siteStatus === 'Up' ? 'bg-green-400/90' : 'bg-red-400';
+  const latencyStatusColor = averageLatency < 300 ? 'bg-green-400' :
+    averageLatency < 600 ? 'bg-amber-400' : 'bg-red-400';
 
   const deleteWebsiteHandler = async (id: string) => {
     try {
-      if (user?.email) {
-        deleteWebsite(user.email, website.id);
-      } else {
-        console.error("User email is undefined.");
-      }
+      if (user?.email) await deleteWebsite(user.email, id);
+    } catch (error) {
+      console.error("Delete error:", error);
     }
-    catch (
-    error: any
-    ) {
-      console.log(error);
-    }
-  }
+  };
 
   return (
-    <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow bg-background">
+    <Card className="w-full max-w-4xl hover:shadow-lg transition-shadow relative h-full content-auto" >
+      {selectedPeriod === '1h' && (
+        <div className="absolute top-1 border-l-4 rounded-3xl -right-4 rotate-45 bg-green-400 text-white text-[10px] px-4 py-0.5 animate-pulse">
+          LIVE
+        </div>
+      )}
+
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
@@ -153,12 +173,7 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="opacity-1 group-hover:opacity-100 transition-opacity"
-                aria-label="Website settings"
-              >
+              <Button variant="ghost" size="sm" aria-label="Website settings">
                 <Settings className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -170,21 +185,12 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
                 <Trash2 className="h-4 w-4" />
                 Delete Monitor
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
-                <History className="h-4 w-4" />
-                View History
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
-                <HeartPulse className="h-4 w-4" />
-                Health Reports
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        {/* Key Metrics Grid */}
+      <CardContent className="">
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 rounded-lg border bg-muted/5">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -199,44 +205,54 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
           <div className="p-4 rounded-lg border bg-muted/5">
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
               <Gauge className="h-4 w-4" />
-              Average Latency
+              {selectedPeriod === '1h' ? 'Live' : `${selectedPeriod}`} Avg. Latency
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-semibold">
                 {averageLatency.toFixed(2)}
               </span>
               <span className="text-muted-foreground">ms</span>
-              <div className={`w-3 h-3 rounded-full ${latencyStatus}`} />
+              <div className={`w-3 h-3 rounded-full ${latencyStatusColor}`} />
             </div>
           </div>
         </div>
 
-        {/* Performance Chart */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Performance History
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                Performance History
+              </h3>
+              {selectedPeriod === '1h' && (
+                <Badge variant="outline" className="border-green-400 text-green-400 animate-pulse">
+                  Live
+                </Badge>
+              )}
+            </div>
             <select
               value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
+              onChange={(e) => setSelectedPeriod(e.target.value as '1h' | '24h' | '7d')}
               className="bg-background border rounded-md px-3 py-1 text-sm"
             >
-              <option value="1h">1 hour</option>
+              <option value="1h">Live</option>
               <option value="24h">24 hours</option>
               <option value="7d">7 days</option>
             </select>
           </div>
           <div className="h-64 w-full border rounded-lg overflow-hidden">
             <PerformanceCharts
-              data={chartData}
               selectedPeriod={selectedPeriod}
-              onPeriodChange={setSelectedPeriod}
-            />
+              id={website.id}
+              url={website.url}
+              realTimeData={ticks.map(t => ({
+                time: t.time.toISOString(),
+                responseTime: t.latency
+              }))} onPeriodChange={function (period: string): void {
+                throw new Error('Function not implemented.');
+              }} />
           </div>
         </div>
 
-        {/* Activity Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -248,8 +264,8 @@ export const WebsiteCard = ({ website }: WebsiteCardProps) => {
           </div>
           <div className="flex gap-1.5 overflow-x-auto pb-2">
             {ticks.map((tick, index) => (
-              <TooltipProvider>
-                <Tooltip key={index}>
+              <TooltipProvider key={index}>
+                <Tooltip>
                   <TooltipTrigger>
                     <div
                       className={`h-3 w-3 rounded-full ${tick.status === 'Up'

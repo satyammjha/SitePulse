@@ -4,13 +4,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import addUser from "@/service/addUser";
 
 const AuthComponent = () => {
-    const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const { user, isAuthenticated, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
 
     console.log("User is", user);
 
     useEffect(() => {
         const registerUser = async () => {
-            if (isAuthenticated && user && user.name && user.email) {
+            if (isAuthenticated && user?.name && user?.email) {
                 const storedUser = localStorage.getItem("registeredUser");
 
                 if (storedUser === user.email) {
@@ -19,10 +19,12 @@ const AuthComponent = () => {
                 }
 
                 try {
+                    const token = await getAccessTokenSilently();
+                    console.log("Fetched access token:", token);  // ✅ Check if token refreshes
                     await addUser(user.name, user.email);
                     localStorage.setItem("registeredUser", user.email);
                 } catch (error) {
-                    console.error("Error adding user:", error);
+                    console.error("Error fetching token or adding user:", error);
                 }
             } else {
                 console.log("User is not authenticated");
@@ -30,7 +32,7 @@ const AuthComponent = () => {
         };
 
         registerUser();
-    }, [isAuthenticated, user]);
+    }, [isAuthenticated, user, getAccessTokenSilently]);
 
     return (
         <div className="flex gap-4">

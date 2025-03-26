@@ -109,3 +109,31 @@ export const deleteWebsiteController = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+export const getWebsiteTicksController = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.body;
+        if (!id) {
+            return res.status(400).json({ error: "Website ID is required" });
+        }
+
+        const website = await prisma.website.findUnique({
+            where: { id: id },
+        });
+
+        if (!website) {
+            return res.status(404).json({ error: "Website not found" });
+        }
+
+        const websiteTicks = await prisma.websiteTicks.findMany({
+            where: { websiteId: id },
+            orderBy: { checkedAt: "desc" },
+        });
+
+        return res.status(200).json(websiteTicks);
+
+    } catch (error: any) {
+        console.error("Error fetching website ticks:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};

@@ -12,7 +12,22 @@
 .animate-ping {
   animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
-
+.grid-cols-auto-fit-300 {
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+}
+@layer utilities {
+  .grid-cols-auto-fit-300 {
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  }
+  
+  .min-w-0 {
+    min-width: 0;
+  }
+  
+  .content-auto {
+    content-visibility: auto;
+  }
+}
 @keyframes float {
   0%,
   100% {

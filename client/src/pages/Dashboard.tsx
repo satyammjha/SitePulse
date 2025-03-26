@@ -15,7 +15,7 @@ const UptimeChainDashboard = () => {
     _id: string;
     url: string;
     status: string;
-    latency: number
+    latency: number;
   }[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -38,10 +38,9 @@ const UptimeChainDashboard = () => {
 
   if (isLoading) return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="space-y-4 w-full max-w-4xl px-4">
-        <Skeleton className="h-10 w-64 mb-6" />
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
+      <div className="w-full max-w-7xl px-4">
+        <div className="grid grid-cols-auto-fit-300 gap-6">
+          {Array.from({ length: 6 }).map((_, index) => (
             <Skeleton key={index} className="h-48 rounded-xl" />
           ))}
         </div>
@@ -52,20 +51,10 @@ const UptimeChainDashboard = () => {
   if (!isAuthenticated) return <Navigate to="/" replace />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background/50 to-muted/20">
-      <main className="container mx-auto py-8 px-4 md:px-6">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Website Monitor
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Real-time performance tracking dashboard
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto">
+    <div className="min-h-screen ">
+      <main className="container mx-auto py-8 px-4 md:px-6 max-w-7xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <AddWebsiteDialog />
             <Button variant="outline" className="gap-2">
               <DownloadIcon className="h-4 w-4" />
@@ -74,7 +63,6 @@ const UptimeChainDashboard = () => {
           </div>
         </div>
 
-        {/* Content Grid */}
         <div className="grid gap-8">
           {websites.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 space-y-4 border rounded-xl bg-background">
@@ -87,21 +75,19 @@ const UptimeChainDashboard = () => {
             </div>
           ) : (
             <>
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-auto-fit-300 gap-6">
                 {websites.map((website) => (
                   <WebsiteCard
                     key={website._id}
                     website={website}
-                    className="hover:shadow-lg transition-shadow"
+                    className="hover:shadow-lg transition-shadow min-w-0"
                   />
                 ))}
               </div>
 
-              {/* Stats & Alerts Section */}
-              <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2 bg-background p-6 rounded-xl border">
+              <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+                <div className="bg-background p-6 rounded-xl border">
                   <h2 className="text-xl font-semibold mb-4">Performance Overview</h2>
-                  {/* <PerformanceCharts /> */}
                   <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
                     <span className="text-muted-foreground">Chart placeholder</span>
                   </div>
