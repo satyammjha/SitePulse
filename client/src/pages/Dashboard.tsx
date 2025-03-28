@@ -8,16 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getWebsites } from "@/service/webService";
 import { RocketIcon, DownloadIcon } from "@radix-ui/react-icons";
+import { fetchDownTimeLogs } from "@/service/getErrorLogs";
 
 const UptimeChainDashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [websites, setWebsites] = useState<{
-    _id: string;
-    url: string;
-    status: string;
-    latency: number;
-  }[]>([]);
+  const [websites, setWebsites] = useState<
+    { _id: string; url: string; status: string; latency: number }[]
+  >([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [alerts, setAlerts] = useState<{ id: string; websiteName: string; message: string; timestamp: string; type: string; resolved: boolean }[]>([]);
 
   useEffect(() => {
     const fetchWebsites = async () => {
@@ -36,22 +35,40 @@ const UptimeChainDashboard = () => {
     fetchWebsites();
   }, [isAuthenticated, user?.email]);
 
-  if (isLoading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-7xl px-4">
-        <div className="grid grid-cols-auto-fit-300 gap-6">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-48 rounded-xl" />
-          ))}
+  useEffect(() => {
+    const getErrorLogs = async () => {
+      try {
+        console.log("Fetching error logs for websites:", websites);
+        if (websites.length > 0 && user?.email) {
+          console.log("Fetching error logs for user:", user.email);
+          const errorLogs = await fetchDownTimeLogs(user.email);
+          setAlerts(errorLogs || []);
+        }
+      } catch (error) {
+        console.error("Error fetching error logs:", error);
+      }
+    };
+
+    getErrorLogs();
+  }, [websites, user?.email]);
+
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-full max-w-7xl px-4">
+          <div className="grid grid-cols-auto-fit-300 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className="h-48 rounded-xl" />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 
   if (!isAuthenticated) return <Navigate to="/" replace />;
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <main className="container mx-auto py-8 px-4 md:px-6 max-w-7xl">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -95,7 +112,7 @@ const UptimeChainDashboard = () => {
 
                 <div className="bg-background p-6 rounded-xl border">
                   <h2 className="text-xl font-semibold mb-4">Recent Alerts</h2>
-                  <AlertsPanel alerts={[]} />
+                  <AlertsPanel alerts={alerts} />
                 </div>
               </div>
             </>

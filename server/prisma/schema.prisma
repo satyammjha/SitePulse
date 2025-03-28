@@ -13,7 +13,8 @@ model User {
   email     String   @unique
   createdAt DateTime @default(now())
 
-  websites Website[] @relation("UserWebsites")
+  websites     Website[]      @relation("UserWebsites")
+  DownTimeLogs DownTimeLogs[]
 }
 
 model Website {
@@ -25,7 +26,8 @@ model Website {
 
   websiteTicks WebsiteTicks[]
 
-  user User @relation("UserWebsites", fields: [userId], references: [id])
+  user         User           @relation("UserWebsites", fields: [userId], references: [id])
+  DownTimeLogs DownTimeLogs[]
 
   @@unique([url, userId])
 }
@@ -38,4 +40,20 @@ model WebsiteTicks {
   checkedAt DateTime @default(now())
 
   website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+}
+
+model DownTimeLogs {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  websiteId    String
+  latency      Int
+  checkedAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+  errorMessage String?
+  userId       String?
+
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([websiteId])
+  @@index([userId])
 }

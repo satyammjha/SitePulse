@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
-import { sendUpdate, initSocketServer } from "../socket/socket";
+import { sendUpdate } from "../socket/socket";
 import { notifyUser } from "./notifyUser";
+import { logDownTime } from "../service/downTimeService"; 
 
 const prisma = new PrismaClient();
 
@@ -12,7 +13,7 @@ const getWebsitesToCheck = async () => {
     const now = new Date();
 
     const websites = await prisma.website.findMany();
-    console.log("all websites", websites);
+    console.log("All websites:", websites);
 
     return websites.filter((website) =>
         !website.lastCheck || new Date(website.lastCheck.getTime() + website.interval) < now
@@ -33,6 +34,7 @@ const checkWebsiteUptime = async (url: string) => {
         return { status: "Down", latency: -1 };
     }
 };
+
 /**
  * Update website status in the database
  * @param {string} websiteId 
@@ -40,7 +42,7 @@ const checkWebsiteUptime = async (url: string) => {
  * @param {number | null} latency 
  * @param {number} interval
  */
-const updateWebsiteStatus = async (websiteId: string, status: string, latency: number | null, interval: number) => {
+const updateWebsiteStatus = async (websiteId: string, status: string, latency: number | null) => {
     console.log(`Updating website status for ${websiteId} - Status: ${status}, Latency: ${latency}ms`);
 
     try {
@@ -70,10 +72,11 @@ const updateWebsiteStatus = async (websiteId: string, status: string, latency: n
         });
 
         if (status === "Down") {
+            await logDownTime(websiteId, latency ?? -1);
+
             const website = await prisma.website.findUnique({
                 where: { id: websiteId },
                 select: { userId: true, url: true },
-
             });
 
             if (website && website.userId) {
@@ -108,7 +111,7 @@ export const checkAllWebsites = async () => {
     await Promise.all(
         websites.map(async (website) => {
             const { status, latency } = await checkWebsiteUptime(website.url);
-            await updateWebsiteStatus(website.id, status, latency, website.interval);
+            await updateWebsiteStatus(website.id, status, latency);
             console.log(`Checked ${website.url} - Status: ${status}, Latency: ${latency}ms`);
         })
     );

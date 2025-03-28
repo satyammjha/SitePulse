@@ -137,3 +137,39 @@ export const getWebsiteTicksController = async (req: Request, res: Response) => 
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+export const getDownTimeLogsController = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.params;
+
+        const user = await prisma.user.findUnique({
+            where: { email },
+            select: { id: true }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const websites = await prisma.website.findMany({
+            where: { userId: user.id },
+            select: { id: true },
+        });
+
+        if (websites.length === 0) {
+            return res.status(404).json({ error: "No websites found for this user" });
+        }
+
+        const websiteIds = websites.map((website) => website.id);
+
+        const downtimeLogs = await prisma.downTimeLogs.findMany({
+            where: { websiteId: { in: websiteIds } },
+            orderBy: { checkedAt: "desc" },
+        });
+
+        return res.status(200).json(downtimeLogs);
+    } catch (error) {
+        console.error("Error fetching downtime logs:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
