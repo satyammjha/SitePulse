@@ -10,6 +10,7 @@ import { getWebsites } from "@/service/webService";
 import { RocketIcon, DownloadIcon } from "@radix-ui/react-icons";
 import { fetchDownTimeLogs } from "@/service/getErrorLogs";
 
+
 const UptimeChainDashboard = () => {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [websites, setWebsites] = useState<
@@ -112,7 +113,7 @@ const UptimeChainDashboard = () => {
 
                 <div className="bg-background p-6 rounded-xl border">
                   <h2 className="text-xl font-semibold mb-4">Recent Alerts</h2>
-                  <AlertsPanel alerts={alerts} />
+                  <AlertsPanel alerts={alerts} websites={websites}/>
                 </div>
               </div>
             </>
