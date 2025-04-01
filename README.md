@@ -1,4 +1,3 @@
-Here's the complete, polished markdown documentation:
 
 ```markdown
 # 🚀 PingIt - Next-Gen Website Uptime Monitoring
@@ -82,9 +81,6 @@ graph TD
 
 ### Installation
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/pingit.git
-
 # Install dependencies
 cd pingit && npm install
 
@@ -93,7 +89,7 @@ cp .env.example .env
 
 # Start development
 npm run dev
-
+```
 
 ## 👥 Contributing
 1. Fork the repository
@@ -107,8 +103,8 @@ Distributed under MIT License. See `LICENSE` for details.
 
 ## 👨💻 Author
 **Satyam Jha**  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/satyammjh/)
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?logo=github)](https://github.com/satyamjha)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/satyammjha/)  
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?logo=github)](https://github.com/satyammjha)
 
 ---
 
