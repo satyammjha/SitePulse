@@ -9,6 +9,31 @@
     opacity: 0;
   }
 }
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 120s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 35s linear infinite;
+}
 .animate-ping {
   animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
@@ -19,11 +44,11 @@
   .grid-cols-auto-fit-300 {
     grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   }
-  
+
   .min-w-0 {
     min-width: 0;
   }
-  
+
   .content-auto {
     content-visibility: auto;
   }

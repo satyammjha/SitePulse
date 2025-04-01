@@ -65,7 +65,7 @@ export const AlertsPanel = ({ alerts, websites }: AlertsPanelProps) => {
                         </Badge>
                       </div>
 
-                      {alert.errorMessage ? (
+                      {/* {alert.errorMessage ? (
                         <p className="text-sm text-destructive flex items-center gap-1">
                           <AlertTriangle className="h-4 w-4" />
                           {alert.errorMessage}
@@ -123,7 +123,7 @@ export const AlertsPanel = ({ alerts, websites }: AlertsPanelProps) => {
                           <Link2 className="h-4 w-4 mr-1.5" />
                           Visit Website
                         </a>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>

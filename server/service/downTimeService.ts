@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
  */
 export const logDownTime = async (websiteId: string, latency: number) => {
     try {
-      
+
         const [lastLog, website] = await Promise.all([
             prisma.downTimeLogs.findFirst({
                 where: { websiteId },

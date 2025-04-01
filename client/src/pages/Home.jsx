@@ -5,6 +5,8 @@ import PricingSection from '../components/sections/PricingSection';
 // import Testimonials from '@/components/sections/Testimonials';
 import CtaSection from '../components/sections/CtaSection';
 import { useAuth0 } from '@auth0/auth0-react';
+import ValidatorCard from '../components/sections/ValidatorCard';
+import NetworkMap from '../components/sections/NetworkMap';
 
 export default function Home() {
   const { user } = useAuth0();
@@ -14,7 +16,9 @@ export default function Home() {
     <>
       <HeroSection />
       <FeaturesSection />
+      <NetworkMap />
       <HowItWorks />
+      <ValidatorCard />
       <PricingSection />
       {/* <Testimonials /> */}
       <CtaSection />

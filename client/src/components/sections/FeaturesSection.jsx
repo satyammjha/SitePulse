@@ -14,7 +14,8 @@ const features = [
     icon: Shield,
     title: "Blockchain Security",
     description: "Immutable uptime records stored on decentralized ledger technology",
-    bgColor: "bg-green-100/50 dark:bg-green-900/20"
+    bgColor: "bg-green-100/50 dark:bg-green-900/20",
+    badge: "Coming Soon"
   },
   {
     icon: Bell,
@@ -38,7 +39,8 @@ const features = [
     icon: Server,
     title: "API Access",
     description: "Full REST API integration with detailed documentation",
-    bgColor: "bg-orange-100/50 dark:bg-orange-900/20"
+    bgColor: "bg-orange-100/50 dark:bg-orange-900/20",
+    badge: "Coming Soon"
   }
 ];
 
@@ -78,7 +80,12 @@ export default function FeaturesSection() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full bg-transparent dark:bg-slate-800/30 hover:border-blue-500/30 transition-colors group">
+              <Card className="h-full bg-transparent dark:bg-slate-800/30 hover:border-blue-500/30 transition-colors group relative">
+                {feature.badge && (
+                  <div className="absolute top-3 right-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100/80 dark:bg-blue-800/80 text-blue-600 dark:text-blue-200 backdrop-blur-sm">
+                    {feature.badge}
+                  </div>
+                )}
                 <CardHeader className="pb-0">
                   <div className={`${feature.bgColor} w-12 h-12 rounded-lg flex items-center justify-center mb-6`}>
                     <feature.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
