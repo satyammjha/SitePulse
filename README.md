@@ -2,21 +2,6 @@
 
 ---
 
-#### ✅ **Completed Features**:
-- **Real-time Monitoring**: 
-   - WebSocket + Node.js for instant website status updates.
-   - Enables real-time detection of website downtimes.
-- **Live Dashboard**:
-   - Built using React + Chart.js to show the live status and historical performance.
-- **Multi-channel Alerts**:
-   - Integrates AWS SNS + Twilio to notify users about downtime and recovery via multiple channels.
-- **Data Management**:
-   - Prisma ORM + MongoDB to efficiently manage and query website data.
-- **Authentication**:
-   - Auth0 + JWT for secure login and user data management.
-
----
-
 #### 🚧 **Upcoming Features**:
 1. **Web3 Validator Network** (Planned for Q4 2025):
    - **Goal**: Introduce a decentralized validator network for uptime validation.
