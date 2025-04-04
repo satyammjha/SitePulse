@@ -17,7 +17,6 @@ const ValidatorCard = () => {
       <Card className="relative overflow-hidden backdrop-blur-sm">
         <div className="container px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left Section */}
             <div className="flex-1 space-y-6">
               <div className="space-y-2">
                 <h3 className="text-3xl font-bold flex items-center gap-2">
@@ -76,7 +75,6 @@ const ValidatorCard = () => {
               </div>
             </div>
 
-            {/* Right Section */}
             <Card className="w-full lg:w-[400px]">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
@@ -86,7 +84,7 @@ const ValidatorCard = () => {
                   </Badge>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <div className="text-3xl font-bold">
@@ -131,4 +129,4 @@ const ValidatorCard = () => {
   )
 }
 
-export default ValidatorCard
+export default ValidatorCard;
