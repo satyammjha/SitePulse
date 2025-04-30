@@ -3,6 +3,7 @@ import { Applayout } from "./components/layouts/AppLayout.jsx";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Incidents from "./pages/Incidents"
+import Documentation from "./pages/Documentation"
 
 export const router = createBrowserRouter([
     {
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
             }, {
                 path: "/incidents",
                 element: <Incidents />
+            },
+            {
+                path:"/docs",
+                element: <Documentation />
             }
         ],
     },
